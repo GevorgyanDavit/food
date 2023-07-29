@@ -1,0 +1,19 @@
+{
+  "name": "food-project",
+  "version": "1.0.9",
+  "description": "food project",
+  "main": "index.js",
+  "scripts": {
+    "serve" : "json-server --watch db.json --port 8888"
+  },
+  "keywords": [
+    "food",
+    "blog",
+    "front-end"
+  ],
+  "author": "we",
+  "license": "ISC",
+  "devDependencies": {
+    "json-server": "^0.17.3"
+  }
+}

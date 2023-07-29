@@ -344,4 +344,9 @@ setTimeout(() => {
     closeModal();
 }, 2000);
 }
+
+fetch("http://localhost:8888/requests")
+    .then(res => res.json())
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
 });
