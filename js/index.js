@@ -150,65 +150,77 @@ window.addEventListener("scroll", showModalByScroll);
 
 // start menu card
 
-class Menu {
-    constructor(img, alt, title, descr, prise, parentelement) {
-        this.img = img;
-        this.alt = alt;
-        this.title = title;
-        this.descr = descr;
-        this.prise = prise;
-        this.parentelement = document.querySelector(parentelement);
-        this.uah = 27;
-        this.changToUAH();
-    };
+// class MenuCard {
+//     constructor(img, alt, title, descr, prise, parentelement) {
+//         this.img = img;
+//         this.alt = alt;
+//         this.title = title;
+//         this.descr = descr;
+//         this.price = prise;
+//         this.parentelement = document.querySelector(parentelement);
+//         this.uah = 27;
+//         this.changToUAH();
+//     };
 
-    changToUAH() {
-        this.prise = parseInt(this.prise * this.uah);
-    };
+//     changToUAH() {
+//         this.prise = parseInt(this.price * this.uah);
+//     };
 
-    HTMLgenerator() {
-        const { img, alt, title, descr, prise, parentelement } = this;
+//     HTMLgenerator() {
+//         const { img, alt, title, descr, prise, parentelement } = this;
+//         const element = document.createElement("div");
+//         element.classList.add("menu__item");
+//         element.innerHTML = `
+//         <img src=${img} alt=${alt}>
+//         <h3 class="menu__item-subtitle">${title}</h3>
+//         <div class="menu__item-descr">${descr}</div>
+//         <div class="menu__item-divider"></div>
+//         <div class="menu__item-price">
+//             <div class="menu__item-cost">Цена:</div>
+//             <div class="menu__item-total"><span>${price}</span> грн/день</div>
+//         </div>
+//         `;
+//         parentelement.append(element);
+//     }
+// };
+
+// getData("http://localhost:8888/menu")
+//  .then(data => data.forEach(({img, altimg, title, descr, price}) => {
+//     new MenuCard(img, altimg, title, descr, price, ".menu .container").HTMLgenerator();
+//  }))
+
+// getData("http://localhost:8888/menu")
+//   .then(data => createMenuCards(data));
+
+axios.get("http://localhost:8888/menu")
+.then(response => createMenuCards(response.data));
+
+function createMenuCards (data) {
+    data.forEach(({img, altimg, title, descr, price}) => {
         const element = document.createElement("div");
         element.classList.add("menu__item");
+        const uah = 27;
+
+        function changToUAH () {
+            price = (parseFloat(price) * parseFloat(uah)).toFixed(2);
+        };
+        
+        changToUAH();
+
         element.innerHTML = `
-        <img src=${img} alt=${alt}>
-        <h3 class="menu__item-subtitle">${title}</h3>
-        <div class="menu__item-descr">${descr}</div>
-        <div class="menu__item-divider"></div>
-        <div class="menu__item-price">
-            <div class="menu__item-cost">Цена:</div>
-            <div class="menu__item-total"><span>${prise}</span> грн/день</div>
-        </div>
+            <img src=${img} alt=${altimg}>
+            <h3 class="menu__item-subtitle">${title}</h3>
+            <div class="menu__item-descr">${descr}</div>
+            <div class="menu__item-divider"></div>
+            <div class="menu__item-price">
+                <div class="menu__item-cost">Цена:</div>
+                <div class="menu__item-total"><span>${price}</span> грн/день</div>
+            </div>
         `;
-        parentelement.append(element);
-    }
-};
-new Menu(
-    "img/tabs/vegy.jpg",
-    "vegy",
-    "Меню \"Фитнес\"",
-    "Меню \"Фитнес\" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!",
-    8.5,
-    ".menu .container"
-).HTMLgenerator();
 
-new Menu(
-    "img/tabs/elite.jpg",
-    "elite",
-    "Меню \"Премиум\"",
-    "В меню \"Премиум\" мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!",
-    20.4,
-    ".menu .container"
-).HTMLgenerator();
-
-new Menu(
-    "img/tabs/post.jpg",
-    "post",
-    "Меню \"Постное\"",
-    "Меню \"Постное\" - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.",
-    16,
-    ".menu .container"
-).HTMLgenerator();
+        document.querySelector(".menu .container").append(element);
+    })
+}
 
 // end menu card
 
@@ -277,9 +289,35 @@ const messages = {
     failure: "Sorry, but something went wrong !"
 }
 
-forms.forEach(form => postData(form));
+forms.forEach(form => bindPostData(form));
 
-function postData(form) {
+async function postData (url, data) {
+    const request = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-type": "application/jason; charset=UTF-8"
+        },
+        body: data
+    });
+
+    if (!request.ok) {
+        throw new Error();
+    }
+
+    return await request.json();
+}
+
+async function getData (url) {
+    const request = await fetch(url);
+
+    if(!request.ok) {
+        throw new Error();
+    }
+
+    return await request.json();
+}
+
+function bindPostData(form) {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
 
@@ -296,17 +334,10 @@ function postData(form) {
         }
 
         const formData = new FormData(form);
-        const obj = {};
-        formData.forEach((val, key) => obj[key] = val);
+        // const data = JSON.stringify(Object.fromEntries(formData.entries()))
+        
 
-        fetch("server.php", {
-            method: "POST",
-            headers: {
-                "Content-type": "application/jason; charset=UTF-8"
-            },
-            body: JSON.stringify(obj)
-        })
-        .then(res => res.text())
+        axios.post("http://localhost:8888/requests", Object.fromEntries(formData))
         .then(res => {
             console.log(res);
             messagesModal(success);
@@ -344,9 +375,4 @@ setTimeout(() => {
     closeModal();
 }, 2000);
 }
-
-fetch("http://localhost:8888/requests")
-    .then(res => res.json())
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
 });
