@@ -333,22 +333,42 @@ window.addEventListener("DOMContentLoaded", function () {
                 form.reset();
             }
 
-            const formData = new FormData(form);
-            // const data = JSON.stringify(Object.fromEntries(formData.entries()))
+            const empty = /^$/g;
+            const phone = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+			let status = false;
 
+            for (let i = 0; i < form.querySelectorAll("input").length; i++) {
+				if (empty.test(form[i].value) || !phone.test(form[1].value)) {
+					status = false;
+					messagesModal("Please fill all fields, and on phone field please fill mobile number format");
+					loader.remove();
+					form.reset();
+					break;
+				} else {
+					status = true;
+				}
+			}
 
-            axios.post("http://localhost:8888/requests", Object.fromEntries(formData))
-                .then(res => {
-                    console.log(res);
-                    messagesModal(success);
-                })
-                .catch(err => {
-                    messagesModal(failure + ": " + err);
-                })
-                .finally(() => {
-                    loader.remove();
-                    form.reset();
-                });
+            if (status) {
+                const formData = new FormData(form);
+                // const data = JSON.stringify(Object.fromEntries(formData.entries()))
+    
+    
+                axios.post("http://localhost:8888/requests", Object.fromEntries(formData))
+                    .then(res => {
+                        console.log(res);
+                        messagesModal(success);
+                    })
+                    .catch(err => {
+                        messagesModal(failure + ": " + err);
+                    })
+                    .finally(() => {
+                        loader.remove();
+                        form.reset();
+                    });
+            } else {
+                console.log("status is false");
+            }
         });
     }
 
