@@ -1,4 +1,4 @@
-const spinner = require("./spinner");
+import spinner from "./spinner"
 
 function formsModule() {
     const forms = document.querySelectorAll("form");
@@ -116,4 +116,5 @@ function formsModule() {
     }
 }
 
-module.exports = formsModule;
+// module.exports = formsModule;
+export default formsModule

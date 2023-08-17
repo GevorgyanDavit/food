@@ -72,4 +72,5 @@ function menuCardsModule() {
     }
 }
 
-module.exports = menuCardsModule;
+// module.exports = menuCardsModule;
+export default menuCardsModule;

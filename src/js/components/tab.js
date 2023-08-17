@@ -34,4 +34,5 @@ function tabModule () {
     })
 }
 
-module.exports = tabModule;
+// module.exports = tabModule;
+export default tabModule;

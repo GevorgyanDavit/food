@@ -137,4 +137,5 @@ function sliderModule() {
     });
 }
 
-module.exports = sliderModule;
+// module.exports = sliderModule;
+export default sliderModule;
